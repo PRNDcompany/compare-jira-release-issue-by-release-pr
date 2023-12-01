@@ -1,0 +1,29 @@
+name: 'Compare jira release issue by release PR'
+description: 'This action extract jira keys from release PR and compare with jira release'
+branding:
+  icon: "book-open"
+  color: "blue"
+
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+  jira-token:
+    description: 'Jira API token key'
+    required: true
+  jira-domain:
+    description: 'Domain name(https://your-domain.atlassian.net)'
+    required: true
+  jira-project:
+    description: 'Jira project name(HDA, ABC)'
+    required: true
+  jira-version-prefix:
+    description: 'Customer'
+    required: false
+
+outputs:
+  missing_issue_keys:
+    description: 'Missing jira issue key list'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
