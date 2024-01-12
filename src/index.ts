@@ -37,6 +37,7 @@ import {Octokit} from "@octokit/rest";
         }
 
         const commitMessages = await getGitHubCommitMessages(githubToken, owner, repo, prNumber)
+        console.log("commitMessages: ", commitMessages)
         const rawJiraIssueKeys = extractJiraIssueKeys(commitMessages)
         console.log("raw jiraIssueKeys: ", rawJiraIssueKeys)
         const jiraBaseUrl = `https://${jiraDomain}.atlassian.net/rest/api/3`
