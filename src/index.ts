@@ -37,6 +37,7 @@ import {Octokit} from "@octokit/rest";
         }
 
         const commitMessages = await getGitHubCommitMessages(githubToken, owner, repo, prNumber)
+        console.log("commitMessages: ", commitMessages)
         const rawJiraIssueKeys = extractJiraIssueKeys(commitMessages)
         console.log("raw jiraIssueKeys: ", rawJiraIssueKeys)
         const jiraBaseUrl = `https://${jiraDomain}.atlassian.net/rest/api/3`
@@ -73,11 +74,13 @@ async function getGitHubCommitMessages(githubToken: string, owner: string, repo:
 
 function extractJiraIssueKeys(commitMessages: string[]): string[] {
     const jiraKeys: string[] = []
+    const noJiraKeyCommieMessages: string[] = []
     for (const commitMessage of commitMessages) {
         const regex = new RegExp(`[A-Z]+-\\d+`, "g")
         // Find jira id per commitMessage
         const matches: string[] | null = regex.exec(commitMessage)
         if (matches == null) {
+            noJiraKeyCommieMessages.push(commitMessage)
             continue
         }
         for (const match of matches) {
@@ -87,6 +90,9 @@ function extractJiraIssueKeys(commitMessages: string[]): string[] {
                 jiraKeys.push(match)
             }
         }
+    }
+    if (noJiraKeyCommieMessages.length > 0) {
+        console.log("No jira id found in commit message: ", noJiraKeyCommieMessages)
     }
     // sort by number
     return jiraKeys.sort((first, second) => (first > second ? 1 : -1))
