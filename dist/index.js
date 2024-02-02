@@ -56,6 +56,7 @@ const rest_1 = require("@octokit/rest");
             return;
         }
         const commitMessages = await getGitHubCommitMessages(githubToken, owner, repo, prNumber);
+        console.log("commitMessages: ", commitMessages);
         const rawJiraIssueKeys = extractJiraIssueKeys(commitMessages);
         console.log("raw jiraIssueKeys: ", rawJiraIssueKeys);
         const jiraBaseUrl = `https://${jiraDomain}.atlassian.net/rest/api/3`;
@@ -85,12 +86,14 @@ async function getGitHubCommitMessages(githubToken, owner, repo, prNumber) {
     });
 }
 function extractJiraIssueKeys(commitMessages) {
-    const regex = new RegExp(`^[A-Z]+-\\d+`, "g");
     const jiraKeys = [];
+    const noJiraKeyCommieMessages = [];
     for (const commitMessage of commitMessages) {
+        const regex = new RegExp(`[A-Z]+-\\d+`, "g");
         // Find jira id per commitMessage
         const matches = regex.exec(commitMessage);
         if (matches == null) {
+            noJiraKeyCommieMessages.push(commitMessage);
             continue;
         }
         for (const match of matches) {
@@ -102,11 +105,14 @@ function extractJiraIssueKeys(commitMessages) {
             }
         }
     }
+    if (noJiraKeyCommieMessages.length > 0) {
+        console.log("No jira id found in commit message: ", noJiraKeyCommieMessages);
+    }
     // sort by number
     return jiraKeys.sort((first, second) => (first > second ? 1 : -1));
 }
 function getJiraVersionName(branchName, jiraVersionPrefix) {
-    const regex = new RegExp(`release/(\\d+\\.\\d+\\.\\d+)`, "g");
+    const regex = new RegExp(`/(\\d+\\.\\d+\\.\\d+)`, "g");
     const matches = regex.exec(branchName);
     if (matches == null) {
         return null;
