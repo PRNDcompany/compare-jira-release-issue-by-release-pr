@@ -126,8 +126,8 @@ function getJiraVersionName(branchName, jiraVersionPrefix) {
     }
 }
 async function getTargetVersionJiraKeys(jiraToken, jiraBaseUrl, jiraProject, jiraVersionName) {
-    //https://yourdomain.atlassian.net/rest/api/3/search
-    const url = `${jiraBaseUrl}/search`;
+    //https://yourdomain.atlassian.net/rest/api/3/search/jql
+    const url = `${jiraBaseUrl}/search/jql`;
     const result = await request.post(url, {
         headers: {
             Authorization: `Basic ${jiraToken}`
